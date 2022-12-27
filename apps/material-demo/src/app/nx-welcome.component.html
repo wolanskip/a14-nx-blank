@@ -1,1 +1,22 @@
-welcome-component works!
+<section>
+  <header>Example consuming the directive</header>
+  <span *prototype>A prototype</span><br/>
+
+  <ul *prototype>
+    <li>1</li>
+    <li>2</li>
+    <li>3</li>
+  </ul>
+
+</section>
+
+<mat-card>
+  <mat-card-content *prototype>Simple card contents</mat-card-content>
+</mat-card>
+
+  <mat-checkbox
+    [checked]="demoStatus"
+    (change)="checkChanged($event)"
+  >Show Items in Prototype Status</mat-checkbox>
+
+
