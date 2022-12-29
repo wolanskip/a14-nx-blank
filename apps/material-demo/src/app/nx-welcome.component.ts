@@ -1,4 +1,4 @@
-import { ApplicationStatusService } from '@a14-sandbox/components-lib';
+import { PrototypeDirectiveService } from '@a14-sandbox/components-lib';
 import { Component, ViewEncapsulation } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 
@@ -13,13 +13,15 @@ import { MatCheckboxChange } from '@angular/material/checkbox';
 })
 export class NxWelcomeComponent {
   public demoStatus: boolean = false;
-  constructor(public appStatus: ApplicationStatusService) {
-    appStatus.subject.subscribe(demoStatus => {
+  constructor(public prototypeService: PrototypeDirectiveService) {
+
+    prototypeService.displayPrototype.subscribe(demoStatus => {
       this.demoStatus = demoStatus;
     });
   }
 
   public checkChanged(event: MatCheckboxChange): void {
-    this.appStatus.subject.next(event.checked);
+    console.log(event);
+    this.prototypeService.displayPrototype.next(event.checked);
   }
 }

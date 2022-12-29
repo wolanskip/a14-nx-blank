@@ -1,8 +1,10 @@
+
+<mat-icon>home</mat-icon>
 <section>
   <header>Example consuming the directive</header>
-  <span *prototype>A prototype</span><br/>
+  <span prototype>A prototype</span><br/>
 
-  <ul *prototype>
+  <ul prototype>
     <li>1</li>
     <li>2</li>
     <li>3</li>
@@ -10,8 +12,16 @@
 
 </section>
 
-<mat-card>
-  <mat-card-content *prototype>Simple card contents</mat-card-content>
+<mat-card prototype>
+  <mat-card-content>
+    Simple card contents
+    <mat-card>
+      <mat-card-content><div>BURIED DEEP</div></mat-card-content>
+    </mat-card>
+
+
+  </mat-card-content>
+
 </mat-card>
 
   <mat-checkbox

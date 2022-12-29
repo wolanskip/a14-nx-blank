@@ -1,59 +1,79 @@
-import { ApplicationStatusService } from './application-status.service';
-import { DOCUMENT } from '@angular/common';
-import { ComponentRef, Directive, ElementRef, Inject, OnInit, Renderer2, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
+import { Directive, ElementRef, Input, OnInit, Renderer2, TemplateRef, ViewChild, ViewContainerRef } from "@angular/core";
 import {  MatIcon } from "@angular/material/icon";
-import { MatTooltip } from '@angular/material/tooltip';
+import { PrototypeDirectiveService } from "./prototype-service";
 
 @Directive({
-  // eslint-disable-next-line @angular-eslint/directive-selector
-  selector: '[prototype]',
-  providers: [MatTooltip]
+    // eslint-disable-next-line @angular-eslint/directive-selector
+    selector: "[prototype]"
 })
-export class PrototypeDirectiveDirective implements OnInit {
+export class PrototypeDirective implements OnInit {
+
+    @Input() public prototype = "";
+
+    public icon: HTMLElement | null = null;
+    public iconParent: HTMLElement | null = null;
 
     constructor(
-      private el: ElementRef,
-      private renderer: Renderer2,
-      @Inject(DOCUMENT) private document: Document,
-      private templateRef: TemplateRef<any>,
-      private vcRef: ViewContainerRef,
-      private statusService: ApplicationStatusService,
-      private tooltip: MatTooltip
-
+        private elementRef: ElementRef,
+        private vcRef: ViewContainerRef,
+        private prototypeDirectiveService: PrototypeDirectiveService,
+        private renderer: Renderer2
     ) {
-        if (this.el.nativeElement.style){
-          this.el.nativeElement.style.backgroundColor = 'yellow';
+    }
+
+    public ngOnInit(): void {
+        this.prototypeDirectiveService.displayPrototype.subscribe(previewMode => {
+            this.redrawChanges(previewMode);
+        });
+    }
+
+    public redrawChanges(previewMode: boolean): void {
+        // reset the view container
+        //this.vcRef.clear();
+
+        if (previewMode) {
+            // this inserts a mat-icon for a warning
+            this.icon = this.renderer.createElement('mat-icon');
+            this.renderer.appendChild(this.icon, this.renderer.createText("rebase_edit"));
+            this.renderer.addClass(this.icon, "mat-icon");
+            this.renderer.addClass(this.icon, "material-icons");
+
+
+            let parent = this.elementRef.nativeElement;
+            let beforeChild = this.elementRef.nativeElement.firstChild;
+
+            const foundWicCard = this.findWicCard(parent);
+            if (foundWicCard) {
+              parent = foundWicCard;
+              beforeChild = parent.firstChild;
+            }
+
+            this.iconParent = parent;
+
+            this.renderer.insertBefore(parent, this.icon, beforeChild);
+
+
+        }
+        else {
+          this.renderer.removeChild(this.iconParent, this.icon);
         }
 
-     }
-
-  public ngOnInit(): void {
-    this.statusService.subject.subscribe(previewMode => {
-      this.redrawChanges(previewMode);
-    });
-  }
-
-  public redrawChanges(previewMode: boolean): void {
-    // reset the view container
-    this.vcRef.clear();
-
-    if (previewMode){
-      // this inserts a mat-icon for a warning
-      const searchIcon = this.vcRef.createComponent<MatIcon>(MatIcon, {index: 0});
-      searchIcon.instance._elementRef.nativeElement.innerHTML = 'rebase_edit';
     }
 
-    this.tooltip.message = "Something goes here"
+    public findWicCard(parent: any): any {
+      console.log(parent.nodeName);
+      if (parent.nodeName === "DIV") {
+        return parent;
+      }
 
-    if (this.templateRef.elementRef.nativeElement.style){
-      this.templateRef.elementRef.nativeElement.style.backgroundColor = 'yellow';
+      for (let i = 0; i < parent.children.length; i++ )
+      {
+          const child = parent.children[i];
+          const result = this.findWicCard(child);
+          if (result) {
+            return result;
+          }
+      }
+      return null;
     }
-
-
-
-
-    // this will append the original content.
-    this.vcRef.createEmbeddedView(this.templateRef);
-    this.vcRef.element.nativeElement.innerHTML += "TESTNG";
-  }
 }
